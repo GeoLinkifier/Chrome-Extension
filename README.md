@@ -12,5 +12,7 @@ V 0.1
 -----
 This is essentially the code that ChatGPT generated, with a LOT of guidance, and some minor tweaks.
 I'm sure this can be significantly improved.
+This first version only searches for names of cities with >10,000 population and disregards states and countries, although they are included in the dataSet.js file. Ambiguity in city names is not handled and left up to Google Earth search algorithm decision.
+
 All Javascript developers are welcome to contribute to this repo and make this handy little utility better and faster.
 Let's see where it goes...
