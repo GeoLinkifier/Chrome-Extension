@@ -37,13 +37,20 @@ const trie = new Trie();
 cityDataset.forEach(city => trie.insert(city.city));
 
 function linkifyCities(textNode) {
-  const text = textNode.textContent.split(/(\W+)/);
-  const newText = text.map(word => {
-    if (trie.search(word)) {
-      return `<a href="https://earth.google.com/web/search/${word}" target="_blank">${word}</a>`;
+  const text = textNode.textContent;
+  const words = text.match(/\b\w[\w']*(?:\s+\w[\w']*)?\b/g) || [];
+
+  const newText = words.reduce((acc, word) => {
+    const trimmedWord = word.trim();
+
+    if (trie.search(trimmedWord) || (trimmedWord.includes(' ') && trie.search(trimmedWord.replace(' ', '')))) {
+      return acc.replace(
+        word,
+        `<a href="https://earth.google.com/web/search/${encodeURIComponent(trimmedWord)}" target="_blank">${word}</a>`
+      );
     }
-    return word;
-  }).join('');
+    return acc;
+  }, text);
 
   if (newText !== textNode.textContent) {
     const wrapper = document.createElement('span');
@@ -69,28 +76,4 @@ function processPage() {
   });
 }
 
-function observeDOM() {
-  let timeout;
-  const observer = new MutationObserver(mutations => {
-    if (timeout) {
-      clearTimeout(timeout);
-    }
-    timeout = setTimeout(() => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            walkNodeTree(node, linkifyCities);
-          }
-        });
-      });
-    }, 300);
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
-}
-
 processPage();
-observeDOM();
